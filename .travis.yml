@@ -6,7 +6,7 @@ before install:
   - docker build -t marek/mui-practice -f Dockerfile.dev .
 
 script:
-  - docker run marek/mui-practice npm run test -- --coverage
+  - docker run -e CI=true marek/mui-practicet npm run test
 
 deploy:
   provider: elasticbeanstalk
