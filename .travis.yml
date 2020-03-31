@@ -10,6 +10,7 @@ script:
 
 deploy:
   provider: elasticbeanstalk
+  edge: true
   region: "eu-north-1"
   app: "mui-practice"
   env: "MuiPractice-env"
