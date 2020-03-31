@@ -7,3 +7,15 @@ before install:
 
 script:
   - docker run marek/mui-practice npm run test -- --coverage
+
+deploy:
+  provider: elasticbeanstalk
+  region: "eu-north-1"
+  app: "mui-practice"
+  env: "MuiPractice-env"
+  bucket_name: "elasticbeanstalk-eu-north-1-085471374027"
+  bucket_path: "mui-practice"
+  on:
+    branch: master
+access_key_id: $AWS_ACCESS_KEY
+secret_access_key: $AWS_SECRET_KEY
