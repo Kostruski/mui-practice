@@ -4,7 +4,7 @@ import { Paper, Grid, Typography } from '@material-ui/core';
 const Right = ({styles}) => {
     return (
       <>
-            <Paper classes={{root: styles}}>Right Pa</Paper>
+            <Paper classes={{root: styles}}>Add content to branch, merge and deploy on AWS</Paper>
       </>
     );
 }
