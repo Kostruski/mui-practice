@@ -3,21 +3,22 @@ import { Paper, Tabs, Tab, Typography } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 
 const styles = theme => ({
-  centered: {
-    justifyContent: 'space-evenly',
-  },
   indicator: {
-    height: '4px',
+    height: '2px',
+  },
+  tabRoot: {
+    fontWeight: theme.typography.fontWeightLight,
   },
   selectedTab: {
-    fontWeight: theme.typography.fontWeightLight,
+    fontWeight: theme.typography.fontWeightMedium,
   },
 });
 
-const Footer = ({ classes }) => {
+const Footer = ({ classes, muscles, getExerciseByMusclesGroup }) => {
   const [value, setValue] = React.useState(0);
   const handleChange = (event, newValue) => {
-    console.log(event.currentTarget, newValue);
+    const selectedMuscles = event.currentTarget.querySelector('.MuiTab-wrapper');
+    getExerciseByMusclesGroup(selectedMuscles.textContent)
     setValue(newValue);
   };
 
@@ -30,11 +31,21 @@ const Footer = ({ classes }) => {
         textColor="primary"
         centered
         fullWidth
-        classes={{ centered: classes.centered, indicator: classes.indicator }}
+        classes={{
+          indicator: classes.indicator,
+          root: classes.root,
+        }}
       >
-        <Tab label="Item One" classes={{ selected: classes.selectedTab }} />
-        <Tab label="Item Two" classes={{ selected: classes.selectedTab }} />
-        <Tab label="Item Three" classes={{ selected: classes.selectedTab }} />
+        <Tab
+          label="all"
+          classes={{ root: classes.tabRoot, selected: classes.selectedTab }}
+        />
+        {muscles.map(group => (
+          <Tab
+            label={group}
+            classes={{ root: classes.tabRoot, selected: classes.selectedTab }}
+          />
+        ))}
       </Tabs>
     </Paper>
   );

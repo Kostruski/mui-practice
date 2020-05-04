@@ -1,32 +1,57 @@
-import React, { Suspense, lazy } from 'react';
+import React, { useState } from 'react';
 import { Container, Box } from '@material-ui/core';
-import { ThemeProvider, createMuiTheme, makeStyles } from '@material-ui/core/styles';
+import { ThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 
-
-import Loading from './components/Loading';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Main from './components/Main';
+import { muscles, exercises } from './store';
 import './App.css';
-// const TableContainer = lazy(() => import('./components/TableContainer'));
 
 const theme = createMuiTheme({
   palette: {
     primary: { main: '#5D1360' },
     secondary: { main: '#D0A60A' },
     text: { primary: '#1D1717' },
-    padding: '1rem'
+    padding: '1rem',
   },
 });
 
 function App() {
+  const [exercisesList, setExercisesList] = useState(exercises);
+
+  // const getExerciseByMusclesGroup = musclesGroup => {
+  //   if (musclesGroup === 'all') return setExercisesList(exercises);
+  //   const selectedExercises = exercises.filter(exercise => {
+  //     return exercise.muscles === musclesGroup;
+  //   });
+  //   return setExercisesList(selectedExercises);
+  // };
+
+  const getExerciseByMusclesGroup = () => {
+    return Object.entries(exercisesList.reduce((accumulatedExercises, currentExercise) => {
+      const { muscles } = currentExercise;
+      accumulatedExercises[muscles] = accumulatedExercises[muscles]
+        ? [...accumulatedExercises[muscles], currentExercise]
+        : [currentExercise];
+      
+      return accumulatedExercises;
+    }, {}));
+  };
+
+ 
+
+
   return (
     <div className="App">
       <ThemeProvider theme={theme}>
         <Container maxWidth={'xl'}>
           <Header />
-          <Main />
-          <Footer />
+          <Main exercises={getExerciseByMusclesGroup()} />
+          <Footer
+            muscles={muscles}
+            getExerciseByMusclesGroup={getExerciseByMusclesGroup}
+          />
         </Container>
       </ThemeProvider>
     </div>
