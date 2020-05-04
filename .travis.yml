@@ -15,7 +15,7 @@ deploy:
   region: "eu-north-1"
   app: "mui-practice"
   env: "MuiPractice-env"
-  bucket_name: "elasticbeanstalk-eu-north-1-085471374027"
+  bucket_name: "elasticbeanstalk-eu-north-1-085471374027" 
   bucket_path: "mui-practice"
   on:
     branch: master
