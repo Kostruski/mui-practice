@@ -1,21 +1,46 @@
-import React from 'react';
+import React, { useState } from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
-import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
-import InputBase from '@material-ui/core/InputBase';
-import { fade, makeStyles } from '@material-ui/core/styles';
-import MenuIcon from '@material-ui/icons/Menu';
-import SearchIcon from '@material-ui/icons/Search';
+import ExerciseForm from './ExerciseForm';
+import Button from '@material-ui/core/Button';
 
-const Header = () => {
+const Header = ({ exercisesList, addExercise }) => {
+  const [formOpen, setFormOpen] = useState(false);
+
+  const openForm = () => {
+    setFormOpen(true);
+  };
+
+  const closeForm = () => {
+    setFormOpen(false);
+  };
+
   return (
     <div>
       <AppBar position="static">
-        <Toolbar>
-          <Typography variant={'subtitle1'} noWrap color="secondary" >
+        <Toolbar style={{ justifyContent: 'space-between' }}>
+          <Typography variant={'subtitle1'} noWrap color="secondary">
             Exercise database
           </Typography>
+          <ExerciseForm
+            exercises={exercisesList}
+            confirmButtonAction={addExercise}
+            closeForm={closeForm}
+            open={formOpen}
+            texts={{
+              title: 'Add exercise',
+              content: 'Fill input fields to add exercise',
+              confirmButton: 'Add',
+            }}
+          />
+          <Button
+            variant="outlined"
+            color="secondary"
+            onClick={() => openForm()}
+          >
+            Add exercise
+          </Button>
         </Toolbar>
       </AppBar>
     </div>

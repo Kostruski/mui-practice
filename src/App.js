@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Container, Box } from '@material-ui/core';
+import { Container } from '@material-ui/core';
 import { ThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 
 import Header from './components/Header';
@@ -18,39 +18,85 @@ const theme = createMuiTheme({
 });
 
 function App() {
+  const selectedExerciseIdInitialState = null;
   const [exercisesList, setExercisesList] = useState(exercises);
+  const [selectedExerciseId, setSelectedExerciseId] = useState(
+    selectedExerciseIdInitialState,
+  );
 
-  // const getExerciseByMusclesGroup = musclesGroup => {
-  //   if (musclesGroup === 'all') return setExercisesList(exercises);
-  //   const selectedExercises = exercises.filter(exercise => {
-  //     return exercise.muscles === musclesGroup;
-  //   });
-  //   return setExercisesList(selectedExercises);
-  // };
-
-  const getExerciseByMusclesGroup = () => {
-    return Object.entries(exercisesList.reduce((accumulatedExercises, currentExercise) => {
-      const { muscles } = currentExercise;
-      accumulatedExercises[muscles] = accumulatedExercises[muscles]
-        ? [...accumulatedExercises[muscles], currentExercise]
-        : [currentExercise];
-      
-      return accumulatedExercises;
-    }, {}));
+  const addExercise = newExercise => {
+    const id = newExercise.title
+      .trim()
+      .toLocaleLowerCase()
+      .replace(/\s+/g, '-');
+    newExercise.id = id;
+  
+    exercises.push(newExercise);
+    const updatedExercises = [...exercises];
+    setExercisesList(updatedExercises);
   };
 
- 
+  // const editExercise = exercise => {
+  //   const selectedIndex = exercises.findIndex(el => el.id === exercise.id);
+  //   exercises.splice(selectedIndex, 1, exercise);
+  //   const updatedExercises = [...exercises];
+  //   setExercisesList(updatedExercises);
+  // };
 
+  const editExercise = exercise => {
+    const selected = exercises.find(el => el.id === exercise.id);
+    const updatedExercises = [...exercises, { ...selected, ...exercise }];
+    setExercisesList(updatedExercises);
+  };
+
+  const deleteExercise = id => {
+    const exerciseIndex = exercises.findIndex(el => el.id === id);
+    exercises.splice(exerciseIndex, 1);
+    const updatedExercises = [...exercises];
+    setSelectedExerciseId(null);
+    setExercisesList(updatedExercises);
+  };
+
+  const getExerciseByMusclesGroup = () => {
+    return Object.entries(
+      exercisesList.reduce((accumulatedExercises, currentExercise) => {
+        const { muscles } = currentExercise;
+        accumulatedExercises[muscles] = accumulatedExercises[muscles]
+          ? [...accumulatedExercises[muscles], currentExercise]
+          : [currentExercise];
+
+        return accumulatedExercises;
+      }, {}),
+    );
+  };
+
+  const onSelect = (musclesGroup = 'all') => {
+    const selectedExerciseIds = exercises.filter(exercise => {
+      return exercise.muscles === musclesGroup;
+    });
+    if (selectedExerciseIds.length === 0 || musclesGroup === 'all')
+      return setExercisesList(exercises);
+    return setExercisesList(selectedExerciseIds);
+  };
 
   return (
     <div className="App">
       <ThemeProvider theme={theme}>
         <Container maxWidth={'xl'}>
-          <Header />
-          <Main exercises={getExerciseByMusclesGroup()} />
+          <Header exercisesList={exercisesList} addExercise={addExercise} />
+          <Main
+            sortedExercises={getExerciseByMusclesGroup()}
+            exercises={exercisesList}
+            selectedExerciseId={selectedExerciseId}
+            setSelectedExerciseId={setSelectedExerciseId}
+            deleteExercise={deleteExercise}
+            editExercise={editExercise}
+          />
           <Footer
             muscles={muscles}
-            getExerciseByMusclesGroup={getExerciseByMusclesGroup}
+            onSelect={onSelect}
+            setSelectedExerciseId={setSelectedExerciseId}
+            selectedExerciseId={selectedExerciseId}
           />
         </Container>
       </ThemeProvider>
@@ -59,6 +105,8 @@ function App() {
 }
 
 export default App;
+
+// ways to style components :
 
 // function App() {
 //     const useStyles = makeStyles({

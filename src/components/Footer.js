@@ -1,5 +1,5 @@
 import React from 'react';
-import { Paper, Tabs, Tab, Typography } from '@material-ui/core';
+import { Paper, Tabs, Tab } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 
 const styles = theme => ({
@@ -14,11 +14,17 @@ const styles = theme => ({
   },
 });
 
-const Footer = ({ classes, muscles, getExerciseByMusclesGroup }) => {
+const Footer = ({ classes, muscles, onSelect, setSelectedExerciseId }) => {
   const [value, setValue] = React.useState(0);
   const handleChange = (event, newValue) => {
-    const selectedMuscles = event.currentTarget.querySelector('.MuiTab-wrapper');
-    getExerciseByMusclesGroup(selectedMuscles.textContent)
+    const selectedMuscles = event.currentTarget.querySelector(
+      '.MuiTab-wrapper',
+    );
+    onSelect(selectedMuscles.textContent);
+    setSelectedExerciseId({
+      title: 'Welcome',
+      description: 'Select an exercise',
+    });
     setValue(newValue);
   };
 
@@ -42,6 +48,7 @@ const Footer = ({ classes, muscles, getExerciseByMusclesGroup }) => {
         />
         {muscles.map(group => (
           <Tab
+            key={group}
             label={group}
             classes={{ root: classes.tabRoot, selected: classes.selectedTab }}
           />
