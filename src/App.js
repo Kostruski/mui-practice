@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container } from '@material-ui/core';
 import { ThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 
@@ -18,48 +18,49 @@ const theme = createMuiTheme({
 });
 
 function App() {
-  const selectedExerciseIdInitialState = null;
-  const [exercisesList, setExercisesList] = useState(exercises);
-  const [selectedExerciseId, setSelectedExerciseId] = useState(
-    selectedExerciseIdInitialState,
-  );
 
+  const [exercisesList, setExercisesList] = useState(exercises);
+  const [selectedTab, setSelectedTab] = useState(0);
+  const [selectedExerciseId, setSelectedExerciseId] = useState(
+    null
+  );
+  const [filteredExercises, setFilteredExercises] = useState([]);
+  let musclesGroup;
+  
   const addExercise = newExercise => {
     const id = newExercise.title
       .trim()
       .toLocaleLowerCase()
       .replace(/\s+/g, '-');
     newExercise.id = id;
-  
-    exercises.push(newExercise);
-    const updatedExercises = [...exercises];
+
+    const updatedExercises = [...exercisesList];
+
+    updatedExercises.push(newExercise);
+
     setExercisesList(updatedExercises);
   };
 
-  // const editExercise = exercise => {
-  //   const selectedIndex = exercises.findIndex(el => el.id === exercise.id);
-  //   exercises.splice(selectedIndex, 1, exercise);
-  //   const updatedExercises = [...exercises];
-  //   setExercisesList(updatedExercises);
-  // };
-
   const editExercise = exercise => {
-    const selected = exercises.find(el => el.id === exercise.id);
-    const updatedExercises = [...exercises, { ...selected, ...exercise }];
+    const selected = exercisesList.find(el => el.id === exercise.id);
+    const updatedExercises = [...exercisesList, { ...selected, ...exercise }];
     setExercisesList(updatedExercises);
   };
 
   const deleteExercise = id => {
-    const exerciseIndex = exercises.findIndex(el => el.id === id);
-    exercises.splice(exerciseIndex, 1);
-    const updatedExercises = [...exercises];
+    const updatedExercises = [...exercisesList];
+    const exerciseIndex = updatedExercises.findIndex(el => el.id === id);
+    updatedExercises.splice(exerciseIndex, 1);
+    
     setSelectedExerciseId(null);
-    setExercisesList(updatedExercises);
+
+   setExercisesList(updatedExercises)
+
   };
 
   const getExerciseByMusclesGroup = () => {
     return Object.entries(
-      exercisesList.reduce((accumulatedExercises, currentExercise) => {
+      filteredExercises.reduce((accumulatedExercises, currentExercise) => {
         const { muscles } = currentExercise;
         accumulatedExercises[muscles] = accumulatedExercises[muscles]
           ? [...accumulatedExercises[muscles], currentExercise]
@@ -70,14 +71,18 @@ function App() {
     );
   };
 
-  const onSelect = (musclesGroup = 'all') => {
-    const selectedExerciseIds = exercises.filter(exercise => {
+  const onTabSelect = (musclesGroup) => {
+    const updatedExercises = [...exercisesList];
+    const exercisesByMuscleGroup = updatedExercises.filter(exercise => {
       return exercise.muscles === musclesGroup;
     });
-    if (selectedExerciseIds.length === 0 || musclesGroup === 'all')
-      return setExercisesList(exercises);
-    return setExercisesList(selectedExerciseIds);
+    (musclesGroup === 'all') ? setFilteredExercises(updatedExercises) : setFilteredExercises(exercisesByMuscleGroup);
   };
+
+    useEffect(() => {
+      musclesGroup = ['all', ...muscles][selectedTab];
+      onTabSelect(musclesGroup);
+    }, [selectedTab, exercisesList]);
 
   return (
     <div className="App">
@@ -86,7 +91,7 @@ function App() {
           <Header exercisesList={exercisesList} addExercise={addExercise} />
           <Main
             sortedExercises={getExerciseByMusclesGroup()}
-            exercises={exercisesList}
+            exercises={filteredExercises}
             selectedExerciseId={selectedExerciseId}
             setSelectedExerciseId={setSelectedExerciseId}
             deleteExercise={deleteExercise}
@@ -94,9 +99,11 @@ function App() {
           />
           <Footer
             muscles={muscles}
-            onSelect={onSelect}
+            onTabSelect={onTabSelect}
             setSelectedExerciseId={setSelectedExerciseId}
             selectedExerciseId={selectedExerciseId}
+            selectedTab={selectedTab}
+            setSelectedTab={setSelectedTab}
           />
         </Container>
       </ThemeProvider>

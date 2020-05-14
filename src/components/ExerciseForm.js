@@ -25,18 +25,9 @@ const styles = theme => ({
    muscles: '',
  };
 
-export const ExerciseForm = ({ classes, addExercise, initialState = formInitialState, open, closeForm, texts, confirmButtonAction }) => {
-
-
+export const ExerciseForm = ({ classes, initialState = formInitialState, open, closeForm, texts, confirmButtonAction }) => {
   const [newExercise, setNewExercise] = useState(initialState);
   const [formEmpty, setFormEmpty] = useState(true);
-
-  console.log(newExercise, 'exercise form renders ...');
-
-  useEffect(() => {
-    setNewExercise(initialState)
-  
-  }, [initialState])
 
   useEffect(() => {
     const validateForm = () => {
@@ -109,7 +100,7 @@ export const ExerciseForm = ({ classes, addExercise, initialState = formInitialS
             {muscles.map(el => (
               <FormControlLabel
                 control={
-                  <Radio onClick={e => radioController(e.target.value)} checked={el === initialState.muscles} />
+                  <Radio onChange={e => radioController(e.target.value)} checked={el === newExercise.muscles}/>
                 }
                 label={el}
                 value={el}

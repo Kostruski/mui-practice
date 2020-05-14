@@ -14,24 +14,16 @@ const styles = theme => ({
   },
 });
 
-const Footer = ({ classes, muscles, onSelect, setSelectedExerciseId }) => {
-  const [value, setValue] = React.useState(0);
+const Footer = ({ classes, muscles, onTabSelect, setSelectedExerciseId, selectedTab, setSelectedTab }) => {
   const handleChange = (event, newValue) => {
-    const selectedMuscles = event.currentTarget.querySelector(
-      '.MuiTab-wrapper',
-    );
-    onSelect(selectedMuscles.textContent);
-    setSelectedExerciseId({
-      title: 'Welcome',
-      description: 'Select an exercise',
-    });
-    setValue(newValue);
+    setSelectedExerciseId(null);
+    setSelectedTab(newValue);
   };
 
   return (
     <Paper square>
       <Tabs
-        value={value}
+        value={selectedTab}
         onChange={handleChange}
         indicatorColor="primary"
         textColor="primary"

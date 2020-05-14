@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useReducer } from 'react';
 import Alert from './Alert';
 import {
   Paper,
@@ -23,7 +23,7 @@ const styles = theme => ({
   paper: {
     padding: '1rem',
     height: '400px',
-    overflowY: 'scroll',
+    overflowY: 'auto',
   },
   heading: {
     textTransform: 'capitalize',
@@ -40,28 +40,64 @@ const Main = ({
   deleteExercise,
   editExercise,
 }) => {
-  const [alertOpen, setAlertOpen] = useState(false);
-  const [idToBeDeleted, setIdToBeDeleted] = useState('');
-  const [formOpen, setFormOpen] = useState(false);
-  const [exerciseToEdit, setExerciseToEdit] = useState(undefined);
+
+  const initialState = {
+    alertOpen: false,
+    idToBeDeleted: '',
+    formOpen: false,
+    exerciseToEdit: undefined,
+  };
+
+  const reducer = (state, action) => {
+    switch (action.type) {
+      case 'setAlertOpen':
+        return {
+          ...state,
+          alertOpen: action.payload.alertOpen,
+          idToBeDeleted: action.payload.idToBeDeleted,
+        };
+      case 'setFormOpen':
+        return {
+          ...state,
+          formOpen: action.payload.formOpen,
+          exerciseToEdit: action.payload.exerciseToEdit,
+        };
+      default:
+        return state;
+    }
+  };
+
+  const [
+    { formOpen, alertOpen, idToBeDeleted, exerciseToEdit },
+    dispatch,
+  ] = useReducer(reducer, initialState);
 
   const openForm = exercise => {
-    setFormOpen(true);
-    setExerciseToEdit(exercise);
+    dispatch({
+      type: 'setFormOpen',
+      payload: { formOpen: true, exerciseToEdit: exercise },
+    });
   };
 
   const closeForm = () => {
-    setFormOpen(false);
-    setExerciseToEdit(undefined);
-  };
-
-  const closeAlert = () => {
-    setAlertOpen(false);
+    dispatch({
+      type: 'setFormOpen',
+      payload: { formOpen: false, exerciseToEdit: undefined },
+    });
   };
 
   const openAlert = id => {
-    setAlertOpen(true);
-    setIdToBeDeleted(id);
+    dispatch({
+      type: 'setAlertOpen',
+      payload: { alertOpen: true, idToBeDeleted: id },
+    });
+  };
+
+  const closeAlert = () => {
+    dispatch({
+      type: 'setAlertOpen',
+      payload: { alertOpen: false, idToBeDeleted: '' },
+    });
   };
 
   const getExerciseDetails = () => {
@@ -73,51 +109,61 @@ const Main = ({
       <Grid container spacing={1}>
         <Grid item xs={12} sm={6} classes={{ root: classes.gridItem }}>
           <Paper classes={{ root: classes.paper }}>
-            {sortedExercises.map((el, i) => (
-              <Fragment key={el[0] + i}>
-                <Typography
-                  variant="h5"
-                  align="left"
-                  classes={{ root: classes.heading }}
-                >
-                  {el[0]}
-                </Typography>
-                <List component="ul">
-                  {el[1].map((el, i) => (
-                    <ListItem
-                      button
-                      onClick={() => {
-                        setSelectedExerciseId(el.id);
-                      }}
-                      selected={selectedExerciseId === el.id}
-                      key={el.description + i}
-                    >
-                      <ListItemText primary={el.title} />
-                      <ListItemSecondaryAction>
-                        <IconButton
-                          edge="end"
-                          aria-label="delete"
-                          onClick={() => {
-                            openAlert(el.id);
-                          }}
-                        >
-                          <DeleteIcon />
-                        </IconButton>
-                        <IconButton
-                          edge="end"
-                          aria-label="edit"
-                          onClick={() => {
-                            openForm(el);
-                          }}
-                        >
-                          <EditIcon />
-                        </IconButton>
-                      </ListItemSecondaryAction>
-                    </ListItem>
-                  ))}
-                </List>
-              </Fragment>
-            ))}
+            {!exercises.length ? (
+              <Typography
+                variant="h5"
+                align="left"
+                classes={{ root: classes.heading }}
+              >
+                No exercise for selected muscles group
+              </Typography>
+            ) : (
+              sortedExercises.map((el, i) => (
+                <Fragment key={el[0] + i}>
+                  <Typography
+                    variant="h5"
+                    align="left"
+                    classes={{ root: classes.heading }}
+                  >
+                    {el[0]}
+                  </Typography>
+                  <List component="ul">
+                    {el[1].map((el, i) => (
+                      <ListItem
+                        button
+                        onClick={() => {
+                          setSelectedExerciseId(el.id);
+                        }}
+                        selected={selectedExerciseId === el.id}
+                        key={el.description + i}
+                      >
+                        <ListItemText primary={el.title} />
+                        <ListItemSecondaryAction>
+                          <IconButton
+                            edge="end"
+                            aria-label="delete"
+                            onClick={() => {
+                              openAlert(el.id);
+                            }}
+                          >
+                            <DeleteIcon />
+                          </IconButton>
+                          <IconButton
+                            edge="end"
+                            aria-label="edit"
+                            onClick={() => {
+                              openForm(el);
+                            }}
+                          >
+                            <EditIcon />
+                          </IconButton>
+                        </ListItemSecondaryAction>
+                      </ListItem>
+                    ))}
+                  </List>
+                </Fragment>
+              ))
+            )}
           </Paper>
         </Grid>
         <Grid item xs={12} sm={6} classes={{ root: classes.gridItem }}>
@@ -136,17 +182,19 @@ const Main = ({
             </Typography>
           </Paper>
         </Grid>
-        <ExerciseForm
-          initialState={exerciseToEdit}
-          open={formOpen}
-          closeForm={closeForm}
-          texts={{
-            title: 'Edit exercise',
-            content: 'Change fields content to change exercise',
-            confirmButton: 'Change',
-          }}
-          confirmButtonAction={editExercise}
-        />
+        {exerciseToEdit && (
+          <ExerciseForm
+            initialState={exerciseToEdit}
+            open={formOpen}
+            closeForm={closeForm}
+            texts={{
+              title: 'Edit exercise',
+              content: 'Change fields content to change exercise',
+              confirmButton: 'Change',
+            }}
+            confirmButtonAction={editExercise}
+          />
+        )}
         <Alert
           open={alertOpen}
           closeAlert={closeAlert}
