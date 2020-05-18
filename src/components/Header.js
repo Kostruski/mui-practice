@@ -1,14 +1,19 @@
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import ExerciseForm from './ExerciseForm';
 import Button from '@material-ui/core/Button';
+import {addExercise} from '../actions'
 
-const Header = ({ exercisesList, addExercise }) => {
+const Header = () => {
   const [formOpen, setFormOpen] = useState(false);
 
-  const openForm = () => {
+  const dispatch = useDispatch();
+
+
+     const openForm = () => {
     setFormOpen(true);
   };
 
@@ -24,8 +29,7 @@ const Header = ({ exercisesList, addExercise }) => {
             Exercise database
           </Typography>
           <ExerciseForm
-            exercises={exercisesList}
-            confirmButtonAction={addExercise}
+            confirmButtonAction={(exercise) => dispatch(addExercise(exercise))}
             closeForm={closeForm}
             open={formOpen}
             texts={{

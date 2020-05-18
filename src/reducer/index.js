@@ -1,3 +1,5 @@
-import {combineReducers} from 'react-redux'
+import { combineReducers } from 'redux';
+import dialogs from './dialogsReducer';
+import exercises from './exercisesReducer';
 
-export default rootReducer = combineReducers({dialogs, exercises})
+export default combineReducers({dialogs, exercises})

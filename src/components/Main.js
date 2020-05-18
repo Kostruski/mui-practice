@@ -1,5 +1,7 @@
-import React, { Fragment, useReducer } from 'react';
+import React, { Fragment } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import Alert from './Alert';
+import ExerciseForm from './ExerciseForm';
 import {
   Paper,
   Grid,
@@ -12,8 +14,17 @@ import {
 } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
-import { withStyles } from '@material-ui/core/styles';
-import ExerciseForm from './ExerciseForm';
+import { withStyles } from '@material-ui/styles';
+
+import {
+  setSelectedExercise,
+  openForm,
+  closeForm,
+  openAlert,
+  closeAlert,
+  deleteExercise,
+  editExercise
+} from '../actions';
 
 const styles = theme => ({
   gridItem: {
@@ -26,7 +37,7 @@ const styles = theme => ({
     overflowY: 'auto',
   },
   heading: {
-    textTransform: 'capitalize',
+    textTransform: 'uppercase',
     margin: '5px 0',
   },
 });
@@ -35,74 +46,14 @@ const Main = ({
   classes,
   exercises,
   sortedExercises,
-  selectedExerciseId,
-  setSelectedExerciseId,
-  deleteExercise,
-  editExercise,
 }) => {
+  const { selectedExercise } = useSelector(state => state.exercises);
 
-  const initialState = {
-    alertOpen: false,
-    idToBeDeleted: '',
-    formOpen: false,
-    exerciseToEdit: undefined,
-  };
+  const { formOpen, alertOpen, idToBeDeleted, exerciseToEdit } = useSelector(
+    state => state.dialogs,
+  );
 
-  const reducer = (state, action) => {
-    switch (action.type) {
-      case 'setAlertOpen':
-        return {
-          ...state,
-          alertOpen: action.payload.alertOpen,
-          idToBeDeleted: action.payload.idToBeDeleted,
-        };
-      case 'setFormOpen':
-        return {
-          ...state,
-          formOpen: action.payload.formOpen,
-          exerciseToEdit: action.payload.exerciseToEdit,
-        };
-      default:
-        return state;
-    }
-  };
-
-  const [
-    { formOpen, alertOpen, idToBeDeleted, exerciseToEdit },
-    dispatch,
-  ] = useReducer(reducer, initialState);
-
-  const openForm = exercise => {
-    dispatch({
-      type: 'setFormOpen',
-      payload: { formOpen: true, exerciseToEdit: exercise },
-    });
-  };
-
-  const closeForm = () => {
-    dispatch({
-      type: 'setFormOpen',
-      payload: { formOpen: false, exerciseToEdit: undefined },
-    });
-  };
-
-  const openAlert = id => {
-    dispatch({
-      type: 'setAlertOpen',
-      payload: { alertOpen: true, idToBeDeleted: id },
-    });
-  };
-
-  const closeAlert = () => {
-    dispatch({
-      type: 'setAlertOpen',
-      payload: { alertOpen: false, idToBeDeleted: '' },
-    });
-  };
-
-  const getExerciseDetails = () => {
-    return exercises.find(el => el.id === selectedExerciseId);
-  };
+  const dispatch = useDispatch();
 
   return (
     <>
@@ -132,9 +83,9 @@ const Main = ({
                       <ListItem
                         button
                         onClick={() => {
-                          setSelectedExerciseId(el.id);
+                          dispatch(setSelectedExercise(el));
                         }}
-                        selected={selectedExerciseId === el.id}
+                        selected={selectedExercise && (selectedExercise.id === el.id)}
                         key={el.description + i}
                       >
                         <ListItemText primary={el.title} />
@@ -143,7 +94,7 @@ const Main = ({
                             edge="end"
                             aria-label="delete"
                             onClick={() => {
-                              openAlert(el.id);
+                              dispatch(openAlert(el.id));
                             }}
                           >
                             <DeleteIcon />
@@ -152,7 +103,7 @@ const Main = ({
                             edge="end"
                             aria-label="edit"
                             onClick={() => {
-                              openForm(el);
+                              dispatch(openForm(el));
                             }}
                           >
                             <EditIcon />
@@ -173,11 +124,11 @@ const Main = ({
               align="left"
               classes={{ root: classes.heading }}
             >
-              {selectedExerciseId ? getExerciseDetails().title : 'Welcome'}
+              {selectedExercise ? selectedExercise.title : 'Welcome'}
             </Typography>
             <Typography variant="caption" align="left" display="block">
-              {selectedExerciseId
-                ? getExerciseDetails().description
+              {selectedExercise
+                ? selectedExercise.description
                 : 'Please select an exercise'}
             </Typography>
           </Paper>
@@ -186,19 +137,19 @@ const Main = ({
           <ExerciseForm
             initialState={exerciseToEdit}
             open={formOpen}
-            closeForm={closeForm}
+            closeForm={() =>dispatch(closeForm())}
             texts={{
               title: 'Edit exercise',
               content: 'Change fields content to change exercise',
               confirmButton: 'Change',
             }}
-            confirmButtonAction={editExercise}
+            confirmButtonAction={(exercise) => dispatch(editExercise(exercise))}
           />
         )}
         <Alert
           open={alertOpen}
-          closeAlert={closeAlert}
-          deleteExercise={() => deleteExercise(idToBeDeleted)}
+          closeAlert={() => dispatch(closeAlert())}
+          deleteExercise={() => dispatch(deleteExercise(idToBeDeleted))}
         />
       </Grid>
     </>

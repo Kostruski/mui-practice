@@ -59,7 +59,7 @@ export const ExerciseForm = ({ classes, initialState = formInitialState, open, c
 
   const handleSubmit = () => {
     if (!formEmpty) {
-      confirmButtonAction(newExercise);
+      confirmButtonAction(newExercise)
       handleClose();
     }
   };

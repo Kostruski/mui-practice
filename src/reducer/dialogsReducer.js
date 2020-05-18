@@ -1,19 +1,25 @@
-export default (state, action) => {
+const initialState = {
+  alertOpen: false,
+  formOpen: false,
+  idToBeDeleted: null,
+  exerciseToEdit: null,
+};
+
+export default (state = initialState, action) => {
   switch (action.type) {
     case 'setAlertOpen':
       return {
         ...state,
-        alertOpen: action.payload.alertOpen,
-        idToBeDeleted: action.payload.idToBeDeleted,
+        alertOpen: action.alertOpen,
+        idToBeDeleted: action.idToBeDeleted,
       };
     case 'setFormOpen':
       return {
         ...state,
-        formOpen: action.payload.formOpen,
-        exerciseToEdit: action.payload.exerciseToEdit,
+        formOpen: action.formOpen,
+        exerciseToEdit: action.exerciseToEdit,
       };
     default:
       return state;
   }
 };
-

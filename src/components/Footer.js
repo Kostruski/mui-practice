@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useCallback, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Paper, Tabs, Tab } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
+import { setSelectedExercise } from '../actions';
 
 const styles = theme => ({
   indicator: {
@@ -14,11 +16,26 @@ const styles = theme => ({
   },
 });
 
-const Footer = ({ classes, muscles, onTabSelect, setSelectedExerciseId, selectedTab, setSelectedTab }) => {
+const Footer = ({ classes }) => {
+  const dispatch = useDispatch();
+
+  const { selectedTab, musclesGroups, selectedExercise } = useSelector(
+    state => state.exercises,
+  );
+
   const handleChange = (event, newValue) => {
-    setSelectedExerciseId(null);
-    setSelectedTab(newValue);
+    if (newValue !== selectedTab)
+      dispatch({ type: 'setSelectedTab', selectedTab: newValue });
   };
+
+  useEffect(() => {
+    if (
+      selectedExercise &&
+      selectedExercise.muscles !== musclesGroups[selectedTab] && selectedTab !== 0
+    ) {
+      dispatch(setSelectedExercise(null));
+    };
+  }, [selectedTab]);
 
   return (
     <Paper square>
@@ -34,11 +51,7 @@ const Footer = ({ classes, muscles, onTabSelect, setSelectedExerciseId, selected
           root: classes.root,
         }}
       >
-        <Tab
-          label="all"
-          classes={{ root: classes.tabRoot, selected: classes.selectedTab }}
-        />
-        {muscles.map(group => (
+        {musclesGroups.map(group => (
           <Tab
             key={group}
             label={group}

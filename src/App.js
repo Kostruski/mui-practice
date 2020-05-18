@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Container } from '@material-ui/core';
 import { ThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Main from './components/Main';
 import { muscles, exercises } from './store';
+import { setExercisesList, onTabSelect } from './actions';
 import './App.css';
 
 const theme = createMuiTheme({
@@ -18,45 +19,25 @@ const theme = createMuiTheme({
 });
 
 function App() {
+  // const [exercisesList, setExercisesList] = useState(exercises);
+  // const [selectedTab, setSelectedTab] = useState(0);
+  // const [selectedExercise, setSelectedExercise] = useState(null);
+  // const [filteredExercises, setFilteredExercises] = useState([]);
+  const dispatch = useDispatch();
 
-  const [exercisesList, setExercisesList] = useState(exercises);
-  const [selectedTab, setSelectedTab] = useState(0);
-  const [selectedExerciseId, setSelectedExerciseId] = useState(
-    null
-  );
-  const [filteredExercises, setFilteredExercises] = useState([]);
-  let musclesGroup;
+  console.log('app renders ...');
+
+  const {
+    exercisesList,
+    filteredExercises,
+    selectedTab,
+    musclesGroups,
+    selectedExercise,
+  } = useSelector(state => state.exercises);
+
+
+
   
-  const addExercise = newExercise => {
-    const id = newExercise.title
-      .trim()
-      .toLocaleLowerCase()
-      .replace(/\s+/g, '-');
-    newExercise.id = id;
-
-    const updatedExercises = [...exercisesList];
-
-    updatedExercises.push(newExercise);
-
-    setExercisesList(updatedExercises);
-  };
-
-  const editExercise = exercise => {
-    const selected = exercisesList.find(el => el.id === exercise.id);
-    const updatedExercises = [...exercisesList, { ...selected, ...exercise }];
-    setExercisesList(updatedExercises);
-  };
-
-  const deleteExercise = id => {
-    const updatedExercises = [...exercisesList];
-    const exerciseIndex = updatedExercises.findIndex(el => el.id === id);
-    updatedExercises.splice(exerciseIndex, 1);
-    
-    setSelectedExerciseId(null);
-
-   setExercisesList(updatedExercises)
-
-  };
 
   const getExerciseByMusclesGroup = () => {
     return Object.entries(
@@ -65,45 +46,33 @@ function App() {
         accumulatedExercises[muscles] = accumulatedExercises[muscles]
           ? [...accumulatedExercises[muscles], currentExercise]
           : [currentExercise];
-
         return accumulatedExercises;
       }, {}),
     );
   };
+  
 
-  const onTabSelect = (musclesGroup) => {
-    const updatedExercises = [...exercisesList];
-    const exercisesByMuscleGroup = updatedExercises.filter(exercise => {
-      return exercise.muscles === musclesGroup;
-    });
-    (musclesGroup === 'all') ? setFilteredExercises(updatedExercises) : setFilteredExercises(exercisesByMuscleGroup);
-  };
+  useEffect(() => {
+    const selectedMusclesGroup = musclesGroups[selectedTab];
+    dispatch(onTabSelect(selectedMusclesGroup, exercisesList));
+  }, [exercisesList, selectedTab]);
 
-    useEffect(() => {
-      musclesGroup = ['all', ...muscles][selectedTab];
-      onTabSelect(musclesGroup);
-    }, [selectedTab, exercisesList]);
+  useEffect(() => {
+    dispatch(setExercisesList(exercises, muscles));
+  }, [dispatch]);
 
   return (
     <div className="App">
       <ThemeProvider theme={theme}>
         <Container maxWidth={'xl'}>
-          <Header exercisesList={exercisesList} addExercise={addExercise} />
+          <Header />
           <Main
             sortedExercises={getExerciseByMusclesGroup()}
             exercises={filteredExercises}
-            selectedExerciseId={selectedExerciseId}
-            setSelectedExerciseId={setSelectedExerciseId}
-            deleteExercise={deleteExercise}
-            editExercise={editExercise}
           />
           <Footer
-            muscles={muscles}
-            onTabSelect={onTabSelect}
-            setSelectedExerciseId={setSelectedExerciseId}
-            selectedExerciseId={selectedExerciseId}
+            selectedExercise={selectedExercise}
             selectedTab={selectedTab}
-            setSelectedTab={setSelectedTab}
           />
         </Container>
       </ThemeProvider>
