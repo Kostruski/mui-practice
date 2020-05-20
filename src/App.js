@@ -7,7 +7,7 @@ import Footer from './components/Footer';
 import Main from './components/Main';
 import { muscles, exercises } from './store';
 import { setExercisesList, onTabSelect } from './actions';
-import './App.css';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 
 const theme = createMuiTheme({
   palette: {
@@ -19,10 +19,6 @@ const theme = createMuiTheme({
 });
 
 function App() {
-  // const [exercisesList, setExercisesList] = useState(exercises);
-  // const [selectedTab, setSelectedTab] = useState(0);
-  // const [selectedExercise, setSelectedExercise] = useState(null);
-  // const [filteredExercises, setFilteredExercises] = useState([]);
   const dispatch = useDispatch();
 
   console.log('app renders ...');
@@ -35,9 +31,11 @@ function App() {
     selectedExercise,
   } = useSelector(state => state.exercises);
 
+  const isMobile = useMediaQuery('(max-width:600px)');
 
-
-  
+  useEffect(() => {
+    dispatch({ type: 'setIsMobile', isMobile });
+  }, [isMobile]);
 
   const getExerciseByMusclesGroup = () => {
     return Object.entries(
@@ -50,7 +48,6 @@ function App() {
       }, {}),
     );
   };
-  
 
   useEffect(() => {
     const selectedMusclesGroup = musclesGroups[selectedTab];
@@ -82,30 +79,3 @@ function App() {
 
 export default App;
 
-// ways to style components :
-
-// function App() {
-//     const useStyles = makeStyles({
-//         root: {
-//             background: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)',
-//             height: '100vh',
-//         },
-//     });
-//     return (
-//         <div className="App">
-//             <Box component="div" className={useStyles().root} />
-//         </div>
-//     );
-// }
-
-// function App() {
-//     const MyBox = styled(Box)({
-//         background: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)',
-//         height: '100vh',
-//     });
-//     return (
-//         <div className="App">
-//             <MyBox />
-//         </div>
-//     );
-// }

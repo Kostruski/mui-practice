@@ -3,6 +3,7 @@ const initialState = {
   formOpen: false,
   idToBeDeleted: null,
   exerciseToEdit: null,
+  isMobile: false,
 };
 
 export default (state = initialState, action) => {
@@ -19,6 +20,11 @@ export default (state = initialState, action) => {
         formOpen: action.formOpen,
         exerciseToEdit: action.exerciseToEdit,
       };
+    case 'setIsMobile': 
+      return {
+        ...state,
+        isMobile: action.isMobile
+      }
     default:
       return state;
   }

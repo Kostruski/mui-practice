@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Paper, Tabs, Tab } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
@@ -23,6 +23,8 @@ const Footer = ({ classes }) => {
     state => state.exercises,
   );
 
+  const {isMobile} = useSelector(state => state.dialogs)
+
   const handleChange = (event, newValue) => {
     if (newValue !== selectedTab)
       dispatch({ type: 'setSelectedTab', selectedTab: newValue });
@@ -37,6 +39,7 @@ const Footer = ({ classes }) => {
     };
   }, [selectedTab]);
 
+  
   return (
     <Paper square>
       <Tabs
@@ -44,8 +47,9 @@ const Footer = ({ classes }) => {
         onChange={handleChange}
         indicatorColor="primary"
         textColor="primary"
+        scrollButtons="on"
         centered
-        fullWidth
+        variant={isMobile ? 'scrollable' : 'auto'}
         classes={{
           indicator: classes.indicator,
           root: classes.root,

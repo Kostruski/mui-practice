@@ -52,12 +52,17 @@ export const setSelectedExercise = id => {
 };
 
 export const openForm = exercise => {
-  return dispatch =>
+  return dispatch => {
     dispatch({
       type: 'setFormOpen',
       formOpen: true,
       exerciseToEdit: exercise,
     });
+    dispatch({
+      type: 'setSelectedExercise',
+      selectedExercise: null
+    });
+  }
 };
 
 export const closeForm = () => {

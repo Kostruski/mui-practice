@@ -23,7 +23,7 @@ import {
   openAlert,
   closeAlert,
   deleteExercise,
-  editExercise
+  editExercise,
 } from '../actions';
 
 const styles = theme => ({
@@ -42,11 +42,7 @@ const styles = theme => ({
   },
 });
 
-const Main = ({
-  classes,
-  exercises,
-  sortedExercises,
-}) => {
+const Main = ({ classes, exercises, sortedExercises }) => {
   const { selectedExercise } = useSelector(state => state.exercises);
 
   const { formOpen, alertOpen, idToBeDeleted, exerciseToEdit } = useSelector(
@@ -85,7 +81,9 @@ const Main = ({
                         onClick={() => {
                           dispatch(setSelectedExercise(el));
                         }}
-                        selected={selectedExercise && (selectedExercise.id === el.id)}
+                        selected={
+                          selectedExercise && selectedExercise.id === el.id
+                        }
                         key={el.description + i}
                       >
                         <ListItemText primary={el.title} />
@@ -102,7 +100,7 @@ const Main = ({
                           <IconButton
                             edge="end"
                             aria-label="edit"
-                            onClick={() => {
+                            onClick={() => { (!exerciseToEdit || el.id!==exerciseToEdit.id) &&
                               dispatch(openForm(el));
                             }}
                           >
@@ -119,33 +117,39 @@ const Main = ({
         </Grid>
         <Grid item xs={12} sm={6} classes={{ root: classes.gridItem }}>
           <Paper classes={{ root: classes.paper }}>
-            <Typography
-              variant="h5"
-              align="left"
-              classes={{ root: classes.heading }}
-            >
-              {selectedExercise ? selectedExercise.title : 'Welcome'}
-            </Typography>
-            <Typography variant="caption" align="left" display="block">
-              {selectedExercise
-                ? selectedExercise.description
-                : 'Please select an exercise'}
-            </Typography>
+            {exerciseToEdit ? (
+              <ExerciseForm
+                initialState={exerciseToEdit}
+                isEditing={!!exerciseToEdit}
+                open={formOpen}
+                closeForm={() => dispatch(closeForm())}
+                texts={{
+                  title: 'Edit exercise',
+                  content: 'Change fields content to change exercise',
+                  confirmButton: 'Change',
+                }}
+                confirmButtonAction={exercise =>
+                  dispatch(editExercise(exercise))
+                }
+              />
+            ) : (
+              <>
+                <Typography
+                  variant="h5"
+                  align="left"
+                  classes={{ root: classes.heading }}
+                >
+                  {selectedExercise ? selectedExercise.title : 'Welcome'}
+                </Typography>
+                <Typography variant="caption" align="left" display="block">
+                  {selectedExercise
+                    ? selectedExercise.description
+                    : 'Please select an exercise'}
+                </Typography>
+              </>
+            )}
           </Paper>
         </Grid>
-        {exerciseToEdit && (
-          <ExerciseForm
-            initialState={exerciseToEdit}
-            open={formOpen}
-            closeForm={() =>dispatch(closeForm())}
-            texts={{
-              title: 'Edit exercise',
-              content: 'Change fields content to change exercise',
-              confirmButton: 'Change',
-            }}
-            confirmButtonAction={(exercise) => dispatch(editExercise(exercise))}
-          />
-        )}
         <Alert
           open={alertOpen}
           closeAlert={() => dispatch(closeAlert())}

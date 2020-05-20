@@ -5,21 +5,23 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import ExerciseForm from './ExerciseForm';
 import Button from '@material-ui/core/Button';
-import {addExercise} from '../actions'
+import useMediaQuery from '@material-ui/core/useMediaQuery';
+import { addExercise } from '../actions';
 
 const Header = () => {
   const [formOpen, setFormOpen] = useState(false);
 
   const dispatch = useDispatch();
 
-
-     const openForm = () => {
+  const openForm = () => {
     setFormOpen(true);
   };
 
   const closeForm = () => {
     setFormOpen(false);
   };
+
+  const isMobileWidth = useMediaQuery('(max-width:600px)');
 
   return (
     <div>
@@ -29,7 +31,7 @@ const Header = () => {
             Exercise database
           </Typography>
           <ExerciseForm
-            confirmButtonAction={(exercise) => dispatch(addExercise(exercise))}
+            confirmButtonAction={exercise => dispatch(addExercise(exercise))}
             closeForm={closeForm}
             open={formOpen}
             texts={{
@@ -43,7 +45,7 @@ const Header = () => {
             color="secondary"
             onClick={() => openForm()}
           >
-            Add exercise
+            {isMobileWidth ? '+' : 'Add exercise'}
           </Button>
         </Toolbar>
       </AppBar>
