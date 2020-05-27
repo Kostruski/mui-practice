@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { withStyles } from '@material-ui/core/styles';
+import PropTypes from 'prop-types';
 import TextFields from './TextFields';
 import Dialog from '@material-ui/core/Dialog';
 
@@ -96,3 +97,12 @@ export const ExerciseForm = props => {
 };
 
 export default withStyles(styles, { withTheme: true })(ExerciseForm);
+
+ExerciseForm.propTypes = {
+  initialState: PropTypes.objectOf(PropTypes.string),
+  open: PropTypes.bool,
+  closeForm: PropTypes.func,
+  texts: PropTypes.objectOf(PropTypes.string),
+  confirmButtonAction: PropTypes.func,
+  isEditing: PropTypes.bool
+};

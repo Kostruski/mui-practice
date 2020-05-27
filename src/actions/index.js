@@ -35,15 +35,41 @@ export const addExercise = newExercise => {
 };
 
 export const deleteExercise = id => {
-  return dispatch =>
+  return (dispatch, getState) => {
+    const { exerciseToEdit } = getState().dialogs;
+    const { exercisesList } = getState().exercises;
+
+    const exercisesAfterDelete = exercisesList.filter(el => el.id !== id)
+
     dispatch({
-      type: 'deleteExercise',
-      id,
+      type: 'setExercisesList',
+      exercisesList: exercisesAfterDelete
     });
+
+    if (exerciseToEdit && exerciseToEdit.id === id)
+      dispatch({ type: 'setExerciseToEdit', exerciseToEdit: null });
+  };
 };
 
 export const editExercise = exercise => {
-  return dispatch => dispatch({ type: 'editExercise', exercise });
+  return (dispatch, getState) => {
+    const exercises = getState().exercises.exercisesList;
+    const exercisesList = [...exercises]
+    const { id } = exercise;
+    const selectedIndex = exercisesList.findIndex(el => el.id === id);
+    const selected = exercisesList.find(el => el.id === id);
+    const editedExercise = {
+      ...selected,
+      ...exercise,
+    };
+    exercisesList.splice(selectedIndex, 1, editedExercise);
+    console.log(exercisesList, 'z edit exercise')
+    
+    dispatch({
+      type: 'setExercisesList',
+      exercisesList
+    });
+  };
 };
 
 export const setSelectedExercise = id => {
@@ -60,9 +86,9 @@ export const openForm = exercise => {
     });
     dispatch({
       type: 'setSelectedExercise',
-      selectedExercise: null
+      selectedExercise: null,
     });
-  }
+  };
 };
 
 export const closeForm = () => {

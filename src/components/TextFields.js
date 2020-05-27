@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { useSelector } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -9,7 +10,6 @@ import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import Button from '@material-ui/core/Button';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import { muscles } from '../store';
 
 const styles = theme => ({
   formGroup: {
@@ -27,6 +27,8 @@ const TextFields = ({
   handleSubmit,
   formEmpty,
 }) => {
+  const { musclesGroups } = useSelector(state => state.exercises);
+  
   return (
     <>
       <DialogTitle id="form-dialog-title">{texts.title}</DialogTitle>
@@ -53,7 +55,7 @@ const TextFields = ({
           onChange={e => inputController(e.target.id)}
         />
         <RadioGroup classes={{ root: classes.formGroup }}>
-          {muscles.map(el => (
+          {musclesGroups.map(el => (
             <FormControlLabel
               control={
                 <Radio

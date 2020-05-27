@@ -25,6 +25,11 @@ export default (state = initialState, action) => {
         ...state,
         isMobile: action.isMobile
       }
+    case 'setExerciseToEdit':
+      return {
+        ...state,
+        exerciseToEdit: action.exerciseToEdit
+      }
     default:
       return state;
   }

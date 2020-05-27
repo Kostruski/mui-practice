@@ -48,8 +48,8 @@ const Footer = ({ classes }) => {
         indicatorColor="primary"
         textColor="primary"
         scrollButtons="on"
-        centered
-        variant={isMobile ? 'scrollable' : 'auto'}
+        centered = {!isMobile}
+        variant={isMobile ? 'scrollable' : 'fullWidth'}
         classes={{
           indicator: classes.indicator,
           root: classes.root,

@@ -1,5 +1,6 @@
 import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
+import PropTypes from 'prop-types';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -9,10 +10,7 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 const styles = {};
 
 const Alert = ({ open, closeAlert, deleteExercise }) => {
-  const handleClose = () => {
-    closeAlert();
-  };
-
+  
   const handleDelete = () => {
     deleteExercise();
     closeAlert();
@@ -21,7 +19,7 @@ const Alert = ({ open, closeAlert, deleteExercise }) => {
   return (
     <Dialog
       open={open}
-      onClose={handleClose}
+      onClose={closeAlert}
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
     >
@@ -31,7 +29,7 @@ const Alert = ({ open, closeAlert, deleteExercise }) => {
         </DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose} color="primary">
+        <Button onClick={closeAlert} color="primary">
           Cancel
         </Button>
         <Button onClick={handleDelete} color="primary" autoFocus>
@@ -43,3 +41,11 @@ const Alert = ({ open, closeAlert, deleteExercise }) => {
 };
 
 export default withStyles(styles, { withTheme: true })(Alert);
+
+Alert.propTypes = {
+  open: PropTypes.bool,
+  closeAlert: PropTypes.func,
+  deleteExercise: PropTypes.func,
+};
+
+

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Container } from '@material-ui/core';
 import { ThemeProvider, createMuiTheme } from '@material-ui/core/styles';
@@ -19,10 +19,6 @@ const theme = createMuiTheme({
 });
 
 function App() {
-  const dispatch = useDispatch();
-
-  console.log('app renders ...');
-
   const {
     exercisesList,
     filteredExercises,
@@ -31,13 +27,22 @@ function App() {
     selectedExercise,
   } = useSelector(state => state.exercises);
 
+  console.log('app renders ...');
+
+  const dispatch = useDispatch();
+
   const isMobile = useMediaQuery('(max-width:600px)');
 
   useEffect(() => {
     dispatch({ type: 'setIsMobile', isMobile });
-  }, [isMobile]);
+  }, [isMobile, dispatch]);
 
-  const getExerciseByMusclesGroup = () => {
+  useEffect(() => {
+    dispatch(setExercisesList(exercises, muscles));
+  }, [dispatch]);
+
+  const getExerciseByMusclesGroup = useCallback(() => {
+    console.log('sorting exercise....');
     return Object.entries(
       filteredExercises.reduce((accumulatedExercises, currentExercise) => {
         const { muscles } = currentExercise;
@@ -47,16 +52,12 @@ function App() {
         return accumulatedExercises;
       }, {}),
     );
-  };
+  }, [filteredExercises]);
 
   useEffect(() => {
     const selectedMusclesGroup = musclesGroups[selectedTab];
     dispatch(onTabSelect(selectedMusclesGroup, exercisesList));
   }, [exercisesList, selectedTab]);
-
-  useEffect(() => {
-    dispatch(setExercisesList(exercises, muscles));
-  }, [dispatch]);
 
   return (
     <div className="App">
@@ -78,4 +79,3 @@ function App() {
 }
 
 export default App;
-
