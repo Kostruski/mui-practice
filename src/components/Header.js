@@ -43,7 +43,10 @@ const Header = () => {
           <Button
             variant="outlined"
             color="secondary"
-            onClick={() => openForm()}
+            onClick={() => {
+              openForm();
+              dispatch({ type: 'setExerciseToEdit', exerciseToEdit: null })
+            }}
           >
             {isMobileWidth ? '+' : 'Add exercise'}
           </Button>

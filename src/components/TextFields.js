@@ -29,7 +29,7 @@ const TextFields = ({
 }) => {
   const { musclesGroups } = useSelector(state => state.exercises);
   
-  return (
+   return (
     <>
       <DialogTitle id="form-dialog-title">{texts.title}</DialogTitle>
       <DialogContent>

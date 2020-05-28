@@ -15,7 +15,6 @@ import {
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import { withStyles } from '@material-ui/styles';
-
 import {
   setSelectedExercise,
   openForm,
