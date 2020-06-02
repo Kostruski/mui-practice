@@ -44,3 +44,4 @@ export const exercises = [
     muscles: 'legs',
   },
 ];
+

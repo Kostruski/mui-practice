@@ -1,40 +1,67 @@
-import React from 'react';
-import { Paper, Tabs, Tab, Typography } from '@material-ui/core';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Paper, Tabs, Tab } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
+import { setSelectedExercise } from '../actions';
 
 const styles = theme => ({
-  centered: {
-    justifyContent: 'space-evenly',
-  },
   indicator: {
-    height: '4px',
+    height: '2px',
+  },
+  tabRoot: {
+    fontWeight: theme.typography.fontWeightLight,
   },
   selectedTab: {
-    fontWeight: theme.typography.fontWeightLight,
+    fontWeight: theme.typography.fontWeightMedium,
   },
 });
 
 const Footer = ({ classes }) => {
-  const [value, setValue] = React.useState(0);
+  const dispatch = useDispatch();
+
+  const { selectedTab, musclesGroups, selectedExercise } = useSelector(
+    state => state.exercises,
+  );
+
+  const {isMobile} = useSelector(state => state.dialogs)
+
   const handleChange = (event, newValue) => {
-    console.log(event.currentTarget, newValue);
-    setValue(newValue);
+    if (newValue !== selectedTab)
+      dispatch({ type: 'setSelectedTab', selectedTab: newValue });
   };
 
+  useEffect(() => {
+    if (
+      selectedExercise &&
+      selectedExercise.muscles !== musclesGroups[selectedTab] && selectedTab !== 0
+    ) {
+      dispatch(setSelectedExercise(null));
+    };
+  }, [selectedTab]);
+
+  
   return (
     <Paper square>
       <Tabs
-        value={value}
+        value={selectedTab}
         onChange={handleChange}
         indicatorColor="primary"
         textColor="primary"
-        centered
-        fullWidth
-        classes={{ centered: classes.centered, indicator: classes.indicator }}
+        scrollButtons="on"
+        centered = {!isMobile}
+        variant={isMobile ? 'scrollable' : 'fullWidth'}
+        classes={{
+          indicator: classes.indicator,
+          root: classes.root,
+        }}
       >
-        <Tab label="Item One" classes={{ selected: classes.selectedTab }} />
-        <Tab label="Item Two" classes={{ selected: classes.selectedTab }} />
-        <Tab label="Item Three" classes={{ selected: classes.selectedTab }} />
+        {musclesGroups.map(group => (
+          <Tab
+            key={group}
+            label={group}
+            classes={{ root: classes.tabRoot, selected: classes.selectedTab }}
+          />
+        ))}
       </Tabs>
     </Paper>
   );
